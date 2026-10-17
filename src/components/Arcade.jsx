@@ -1,190 +1,130 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { readPreference, writePreference } from '../lib/storage';
-import Icon from './Icon';
-import Modal from './Modal';
+import { useEffect, useRef, useState } from "react";
+import Modal from "./Modal";
+import Icon from "./Icon";
+import RuneRelay from "./RuneRelay";
+import PacketRunner from "./PacketRunner";
+import SectorSalvage from "./SectorSalvage";
+import BootSequence from "./BootSequence";
+import { quests } from "../data/quests";
+import { readPreference, writePreference } from "../lib/storage";
+import "../quests.css";
 
-const runes = [
-  { name: 'Ember', icon: 'spark' },
-  { name: 'Crystal', icon: 'gem' },
-  { name: 'Blade', icon: 'swords' },
-  { name: 'Grove', icon: 'leaf' },
-];
-const chooseRune = () => Math.floor(Math.random() * runes.length);
-
-export default function Arcade({ onClose, onWin }) {
-  const [sequence, setSequence] = useState([]);
-  const [phase, setPhase] = useState('ready');
-  const [lit, setLit] = useState(-1);
-  const [step, setStep] = useState(0);
-  const [completed, setCompleted] = useState(0);
-  const [best, setBest] = useState(() =>
-    Math.max(0, Math.min(5, Number(readPreference('rune-best', 0)) || 0)),
+const games = {
+  runes: RuneRelay,
+  packets: PacketRunner,
+  salvage: SectorSalvage,
+  scheduler: BootSequence,
+};
+function readBadges() {
+  const saved = readPreference("quest-badges", {});
+  return Object.fromEntries(
+    quests.map((quest) => [
+      quest.id,
+      quest.id === "runes"
+        ? readPreference("rune-best", 0) === 5
+        : saved?.[quest.id] === true,
+    ]),
   );
-  const timers = useRef([]);
-  const locked = useRef(false);
-  const clearTimers = useCallback(() => {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-  }, []);
-  const schedule = (fn, delay) => {
-    timers.current.push(setTimeout(fn, delay));
-  };
-
-  useEffect(() => () => clearTimers(), [clearTimers]);
-  const showSequence = (next) => {
-    clearTimers();
-    locked.current = true;
-    setSequence(next);
-    setPhase('watch');
-    setLit(-1);
-    setStep(0);
-    next.forEach((rune, index) => {
-      schedule(() => setLit(rune), 650 + index * 950);
-      schedule(() => setLit(-1), 1250 + index * 950);
-    });
-    schedule(
-      () => {
-        locked.current = false;
-        setPhase('input');
-      },
-      700 + next.length * 950,
+}
+export default function Arcade({ onClose, onWin, initialQuest }) {
+  const [selected, setSelected] = useState(
+    games[initialQuest] ? initialQuest : null,
+  );
+  const [badges, setBadges] = useState(readBadges);
+  const body = useRef(null);
+  const quest = quests.find((item) => item.id === selected),
+    Game = games[selected];
+  const complete = () => {
+    const saved = readBadges();
+    const next = Object.fromEntries(
+      quests.map((item) => [
+        item.id,
+        badges[item.id] || saved[item.id] || item.id === selected,
+      ]),
     );
+    writePreference("quest-badges", next);
+    setBadges(next);
+    if (selected === "runes") onWin();
   };
-  const press = (rune) => {
-    if (phase !== 'input' || locked.current) return;
-    setLit(rune);
-    schedule(() => setLit(-1), 180);
-    if (rune !== sequence[step]) {
-      locked.current = true;
-      setPhase('lost');
-      return;
-    }
-    if (step + 1 < sequence.length) {
-      setStep(step + 1);
-      return;
-    }
-    locked.current = true;
-    const score = sequence.length;
-    setCompleted(score);
-    setStep(score);
-    if (score > best) {
-      setBest(score);
-      writePreference('rune-best', score);
-    }
-    if (score === 5) {
-      setPhase('won');
-      onWin();
-    } else {
-      setPhase('round');
-      schedule(() => showSequence([...sequence, chooseRune()]), 950);
-    }
-  };
-  const pressRef = useRef(press);
-  pressRef.current = press;
   useEffect(() => {
-    const onKey = (event) => {
-      if (
-        /^[1-4]$/.test(event.key) &&
-        !event.repeat &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.altKey
-      ) {
-        event.preventDefault();
-        pressRef.current(Number(event.key) - 1);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-  const restart = () => {
-    setCompleted(0);
-    showSequence([chooseRune()]);
-  };
-  const messages = {
-    ready: 'A small test of memory. A worthy side quest.',
-    watch: 'Watch the runes. Remember the order.',
-    input: 'Your turn. Repeat the sequence.',
-    round: 'Well played. The pattern grows…',
-    lost: 'The runes slipped away. Give it another go.',
-    won: 'Quest complete. You are a Rune Keeper.',
-  };
+    body.current?.focus({ preventScroll: true });
+    body.current?.closest("dialog")?.scrollTo({ top: 0 });
+  }, [selected]);
   return (
     <Modal
-      title="Rune Relay"
-      eyebrow="SIDE QUEST / THE ARCADE"
+      title={quest?.title || "The Side Quest Board"}
+      eyebrow="OPTIONAL DETOURS / LOCAL ARCADE"
+      className={`arcade-modal quest-modal ${selected ? `quest-${selected}` : "quest-board-modal"}`}
       onClose={onClose}
-      className="arcade-modal"
     >
-      <div className="arcade-body">
-        <p>
-          Watch the sequence, then repeat it. Clear five rounds to earn your
-          badge. Click, tap, or use keys <kbd>1</kbd> through <kbd>4</kbd>.
-        </p>
-        <div className="arcade-stats">
-          <span>
-            ROUND <strong>{sequence.length || 1} / 5</strong>
-          </span>
-          <span>
-            BEST <strong>{best} / 5</strong>
-          </span>
-        </div>
-        <div className="rune-grid">
-          {runes.map((rune, index) => (
-            <button
-              key={rune.name}
-              className={`rune rune-${index} ${lit === index ? 'lit' : ''}`}
-              onClick={() => press(index)}
-              aria-disabled={phase !== 'input'}
-              aria-label={`${rune.name}, key ${index + 1}${lit === index ? ', illuminated' : ''}`}
-            >
-              <span className="rune-key">0{index + 1}</span>
-              <Icon name={rune.icon} size={40} />
-              <span>{rune.name}</span>
-            </button>
-          ))}
-        </div>
-        <span
-          className="sr-only"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {phase === 'watch' && lit >= 0 ? runes[lit].name : ''}
-        </span>
-        <div className="arcade-message" role="status">
-          <Icon
-            name={phase === 'won' ? 'gem' : phase === 'lost' ? 'down' : 'spark'}
-            size={19}
-          />
-          <p>{messages[phase]}</p>
-        </div>
-        <div
-          className="round-progress"
-          aria-label={`${completed} of 5 rounds completed`}
-        >
-          {Array.from({ length: 5 }, (_, index) => (
-            <i className={index < completed ? 'complete' : ''} key={index} />
-          ))}
-        </div>
-        {['ready', 'lost', 'won'].includes(phase) ? (
-          <button className="button primary arcade-start" onClick={restart}>
-            {phase === 'ready' ? 'Begin the quest' : 'Play again'}
-            <Icon name="arrow" size={18} />
-          </button>
+      <div
+        className="quest-content"
+        ref={body}
+        tabIndex={-1}
+        aria-label={
+          quest
+            ? `${quest.title} instructions and controls`
+            : "Choose a side quest"
+        }
+      >
+        {quest ? (
+          <>
+            <div className="quest-game-nav">
+              <button className="text-button" onClick={() => setSelected(null)}>
+                ← Quest board
+              </button>
+              <span
+                className={`quest-badge ${badges[selected] ? "earned" : ""}`}
+              >
+                <Icon name={badges[selected] ? "check" : "gem"} size={14} />
+                {badges[selected] ? quest.badge : "Badge to discover"}
+              </span>
+            </div>
+            <Game onWin={complete} />
+          </>
         ) : (
-          <button
-            className="text-button replay-sequence"
-            onClick={() => showSequence(sequence)}
-            disabled={phase !== 'input'}
-          >
-            Replay this sequence <Icon name="down" size={15} />
-          </button>
+          <>
+            <p className="quest-board-intro">
+              The work can wait a minute. Restore a relay, recover a lost
+              archive, or see how far your memory takes you.
+            </p>
+            <div className="quest-collection">
+              <span className="eyebrow">YOUR COLLECTION</span>
+              <strong>
+                {Object.values(badges).filter(Boolean).length} / {quests.length}{" "}
+                badges
+              </strong>
+            </div>
+            <div className="quest-board-grid">
+              {quests.map((item) => (
+                <button
+                  key={item.id}
+                  className={`quest-card ${badges[item.id] ? "completed" : ""}`}
+                  onClick={() => setSelected(item.id)}
+                >
+                  <span className="quest-card-top">
+                    <Icon name={item.icon} size={29} />
+                    <small>{item.time}</small>
+                  </span>
+                  <span className="eyebrow">{item.genre}</span>
+                  <strong>{item.title}</strong>
+                  <span className="quest-card-description">
+                    {item.description}
+                  </span>
+                  <span className="quest-card-footer">
+                    {badges[item.id] ? `✓ ${item.badge}` : "Accept quest"}
+                    <Icon name="arrow" size={16} />
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="quest-board-note">
+              No accounts or leaderboards. Take your time. Badges stay in this
+              browser. Leave a quest anytime; unfinished runs restart when
+              reopened. Rune Relay’s existing record is preserved.
+            </p>
+          </>
         )}
-        <small className="arcade-note">
-          Your best round stays in this browser. No scoreboards, just bragging
-          rights.
-        </small>
       </div>
     </Modal>
   );

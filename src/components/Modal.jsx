@@ -1,20 +1,21 @@
-import { useEffect, useRef } from 'react';
-import Icon from './Icon';
+import { useEffect, useId, useRef } from "react";
+import Icon from "./Icon";
 
 export default function Modal({
   title,
   eyebrow,
   children,
   onClose,
-  className = '',
+  className = "",
 }) {
   const dialog = useRef(null);
+  const titleId = useId();
   useEffect(() => {
     const node = dialog.current;
     const previous = document.activeElement;
     const originalOverflow = document.body.style.overflow;
     node.showModal();
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
       node.close();
       document.body.style.overflow = originalOverflow;
@@ -25,13 +26,13 @@ export default function Modal({
     <dialog
       ref={dialog}
       className={`modal ${className}`}
-      aria-labelledby="dialog-title"
+      aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault();
         onClose();
       }}
       onKeyDown={(event) => {
-        if (event.key !== 'Tab') return;
+        if (event.key !== "Tab") return;
         const focusable = [
           ...event.currentTarget.querySelectorAll(
             'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
@@ -71,7 +72,7 @@ export default function Modal({
       <header className="modal-header">
         <div>
           {eyebrow && <span className="eyebrow">{eyebrow}</span>}
-          <h2 id="dialog-title">{title}</h2>
+          <h2 id={titleId}>{title}</h2>
         </div>
         <button
           className="icon-button"

@@ -1,14 +1,14 @@
 @font-face {
-  font-family: 'DM Sans';
+  font-family: "DM Sans";
   font-style: normal;
   font-weight: 100 1000;
   font-display: swap;
-  src: url('@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2')
-    format('woff2-variations');
+  src: url("@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2")
+    format("woff2-variations");
 }
 
 :root {
-  font-family: 'DM Sans', Arial, sans-serif;
+  font-family: "DM Sans", Arial, sans-serif;
   color: #e8e5dc;
   background: #111210;
   font-synthesis: none;
@@ -21,8 +21,8 @@
   --gold: #d1b17b;
   --gold-light: #e3c995;
   --line: #ffffff14;
-  --serif: Georgia, 'Times New Roman', serif;
-  --sans: 'DM Sans', Arial, sans-serif;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: "DM Sans", Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -332,7 +332,7 @@ p {
   transition: color 0.2s;
 }
 .main-nav > a:after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 21px;
   left: 0;
@@ -803,7 +803,7 @@ p {
   animation-duration: 35s;
 }
 .monday-orbit > i:first-child:after {
-  content: '';
+  content: "";
   position: absolute;
   left: 12%;
   top: 12%;
@@ -969,7 +969,7 @@ p {
 }
 .card-orbit:before,
 .card-orbit:after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 14px;
   border: 1px dashed #b6875022;
@@ -1010,7 +1010,7 @@ p {
     #1b241c;
 }
 .card-back:after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 7px;
   border: 1px solid #bfa76b22;
@@ -1049,7 +1049,7 @@ p {
   position: relative;
 }
 .card-sigil:before {
-  content: '';
+  content: "";
   position: absolute;
   width: 49px;
   height: 49px;
@@ -1174,7 +1174,7 @@ p {
 .art-realm {
   background:
     linear-gradient(#11121070, #111210a3),
-    url('/images/rpg-bg.jpg') center/cover;
+    url("/images/rpg-bg.jpg") center/cover;
 }
 .archive-number {
   position: absolute;
@@ -1194,7 +1194,7 @@ p {
 }
 .archive-sigil:before,
 .archive-sigil:after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border: 1px solid #c9b38128;
@@ -1313,7 +1313,7 @@ p {
   letter-spacing: 2px;
 }
 .tree-root:after {
-  content: '';
+  content: "";
   position: absolute;
   top: 78px;
   left: 50%;
@@ -1338,7 +1338,7 @@ p {
   --branch-color: #bea086;
 }
 .skill-branch:before {
-  content: '';
+  content: "";
   position: absolute;
   top: -22px;
   left: 50%;
@@ -1346,7 +1346,7 @@ p {
   border-left: 1px solid #c3b7743d;
 }
 .skill-branch:not(:last-child):after {
-  content: '';
+  content: "";
   position: absolute;
   top: -22px;
   left: 50%;
@@ -1393,7 +1393,7 @@ p {
   margin-top: 26px;
 }
 .skill-nodes:before {
-  content: '';
+  content: "";
   position: absolute;
   left: 50%;
   top: -27px;
@@ -1582,7 +1582,7 @@ p {
   padding-bottom: 33px;
 }
 .timeline-item:before {
-  content: '';
+  content: "";
   position: absolute;
   left: 6px;
   top: 13px;
@@ -1667,7 +1667,7 @@ p {
   color: #858e79;
 }
 .job-tags > span + span:before {
-  content: '·';
+  content: "·";
   margin-right: 15px;
   color: #bbba9350;
 }
@@ -1787,7 +1787,7 @@ p {
 }
 .portrait-frame:before,
 .portrait-frame:after {
-  content: '';
+  content: "";
   position: absolute;
   inset: -3px;
   border: 1px solid #afa46d35;
@@ -2579,7 +2579,7 @@ kbd {
   font-size: 10px;
   letter-spacing: 1px;
 }
-.rune[aria-disabled='true'] {
+.rune[aria-disabled="true"] {
   cursor: default;
 }
 .rune-key {
@@ -2604,7 +2604,7 @@ kbd {
   background: #a2b58406;
   border-color: #a2b58436;
 }
-.rune[aria-disabled='false']:hover {
+.rune[aria-disabled="false"]:hover {
   border-color: currentColor;
   background: #b8c99415;
 }
@@ -2617,7 +2617,7 @@ kbd {
   color: #f0f1d8;
 }
 .rune.lit:after {
-  content: '◆';
+  content: "◆";
   position: absolute;
   right: 12px;
   top: 8px;
@@ -2691,12 +2691,12 @@ kbd {
     transform: none;
   }
 }
-html[data-motion='off'] {
+html[data-motion="off"] {
   scroll-behavior: auto;
 }
-html[data-motion='off'] *,
-html[data-motion='off'] *:before,
-html[data-motion='off'] *:after {
+html[data-motion="off"] *,
+html[data-motion="off"] *:before,
+html[data-motion="off"] *:after {
   animation: none !important;
   transition: none !important;
 }

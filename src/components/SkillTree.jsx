@@ -1,13 +1,20 @@
-import { useState } from 'react';
-import { skillBranches } from '../data/portfolio';
-import Icon from './Icon';
+import { useState } from "react";
+import { skillBranches, projects } from "../data/portfolio";
+import Icon from "./Icon";
 
 export default function SkillTree({ onProject, onArcade }) {
-  const [selected, setSelected] = useState('dotnet');
+  const [selected, setSelected] = useState("dotnet");
+  const [technology, setTechnology] = useState("C#");
   const branch = skillBranches.find((item) =>
     item.nodes.some((node) => node.id === selected),
   );
   const skill = branch.nodes.find((node) => node.id === selected);
+  const evidence = projects.filter((project) =>
+    project.tags.some((tag) => {
+      const normalize = (value) => value.toLowerCase().replace(/\s+/g, "");
+      return normalize(tag).includes(normalize(technology));
+    }),
+  );
   return (
     <section
       id="skills"
@@ -40,7 +47,7 @@ export default function SkillTree({ onProject, onArcade }) {
           <div className="skill-branches">
             {skillBranches.map((item) => (
               <div
-                className={`skill-branch branch-${item.id} ${branch.id === item.id ? 'branch-selected' : ''}`}
+                className={`skill-branch branch-${item.id} ${branch.id === item.id ? "branch-selected" : ""}`}
                 key={item.id}
               >
                 <div className="branch-heading">
@@ -54,9 +61,12 @@ export default function SkillTree({ onProject, onArcade }) {
                   {item.nodes.map((node) => (
                     <button
                       key={node.id}
-                      className={`skill-node ${selected === node.id ? 'selected' : ''}`}
+                      className={`skill-node ${selected === node.id ? "selected" : ""}`}
                       aria-pressed={selected === node.id}
-                      onClick={() => setSelected(node.id)}
+                      onClick={() => {
+                        setSelected(node.id);
+                        setTechnology(node.tools[0]);
+                      }}
                     >
                       <span className="node-icon">
                         <Icon name={node.icon} size={18} />
@@ -65,6 +75,30 @@ export default function SkillTree({ onProject, onArcade }) {
                       <span className="node-dot" />
                     </button>
                   ))}
+                </div>
+                <div
+                  className="technology-orbits"
+                  aria-label={`${item.name} technologies`}
+                >
+                  {[...new Set(item.nodes.flatMap((node) => node.tools))].map(
+                    (tool) => (
+                      <button
+                        key={tool}
+                        aria-pressed={
+                          technology === tool && branch.id === item.id
+                        }
+                        onClick={() => {
+                          setSelected(
+                            item.nodes.find((node) => node.tools.includes(tool))
+                              .id,
+                          );
+                          setTechnology(tool);
+                        }}
+                      >
+                        {tool}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             ))}
@@ -100,6 +134,25 @@ export default function SkillTree({ onProject, onArcade }) {
             ))}
           </div>
           <div className="skill-evidence">
+            <div className="technology-evidence">
+              <span className="eyebrow">TECHNOLOGY / {technology}</span>
+              {evidence.length ? (
+                evidence.map((project) => (
+                  <button
+                    key={project.id}
+                    className="text-button"
+                    onClick={() => onProject(project.id)}
+                  >
+                    {project.title} <Icon name="diagonal" size={14} />
+                  </button>
+                ))
+              ) : (
+                <p>
+                  {skill.evidence}. This technology is listed in the skill
+                  notes; no project-level usage is claimed here.
+                </p>
+              )}
+            </div>
             <span className="eyebrow">PUT INTO PRACTICE</span>
             {skill.project ? (
               <button

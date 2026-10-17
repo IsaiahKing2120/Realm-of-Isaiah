@@ -1,86 +1,408 @@
 # Realm of Isaiah
 
-The personal world of Isaiah King. A portfolio for software, systems, and game development, with a little room for adventure.
+## Version 5.1: More Side Quests
 
-## Run it
+Version 5.1 adds a bigger arcade layer to the site without changing what Realm of Isaiah is at its core.
 
-Install Node.js 22 or newer. On Windows, double-click `START-WEBSITE.bat`, or use a terminal:
+The original Rune Relay mini-game is now joined by three new side quests:
 
-```sh
-npm ci
-npm run dev
-```
+- **Packet Runner** — three routing puzzles
+- **Sector Salvage** — a replayable recovery grid
+- **Boot Sequence** — three dependency challenges
 
-Open the local address Vite prints. The site uses `/Realm-of-Isaiah/` as its base path, matching the existing GitHub Pages repository.
+Each completed quest earns a local badge in the browser. All four games support keyboard and touch controls, and they can be launched from the quest board, command palette, or portfolio terminal.
 
-## Build and check
+The arcade code only loads when a game is actually opened, so the main portfolio stays lightweight. Rune Relay keeps its existing saved record, unfinished runs reset when you leave, and completed badges stay saved locally.
 
-```sh
-npm run lint
-npm run build
-npm run preview
-```
+Recruiter Mode also continues to keep the side-quest area out of the main reading flow.
 
-`dist/` is the production website. A ready-built copy is included in the release archive. Serve it over HTTP with `npm run preview`; opening `index.html` directly as a local file does not support the module and base-path setup.
+To run the quest tests:
 
-## Publish to the existing GitHub Pages site
+`npm run test:quests`
 
-From an authenticated checkout of `IsaiahKing2120/Realm-of-Isaiah`:
+More implementation notes and controls are available in:
 
-```sh
-npm ci
-npm run deploy
-```
+`docs/SIDE-QUESTS.md`
 
-The `predeploy` script runs the production build first. The deploy script publishes `dist/` to the `gh-pages` branch using the existing hosting approach. In GitHub Pages settings, the publishing source should be that branch’s root.
+---
 
-To transfer this release into an existing checkout, replace its `src/` and `public/` directories with the ones in this archive, and copy the root configuration files. Keep your checkout’s `.git` directory. Then install the updated dependencies with `npm ci`. The original uploaded archive remains your backup.
+## What is Realm of Isaiah?
 
-If you later move to a custom domain or another repository, update the base in `vite.config.js` and the canonical/social URLs in `index.html` together.
+Realm of Isaiah is my personal portfolio and interactive development space.
 
-## Inside the realm
+It highlights my work across:
 
-- **The workbench:** eight projects, category filters, and individual project breakdowns. Includes current development work, prototypes, and smaller learning projects.
-- **The skill tree:** nine selectable skills across systems, software, and game development. Each skill links to related work or experience.
-- **The quest log:** a career timeline and certificates, aligned with the included résumé. The IBM Full Stack Developer certificate remains marked in progress, as listed in that PDF.
-- **M.O.N.D.A.Y.:** a portfolio guide with curated answers and navigation actions. It can point visitors to projects, skills, work history, the résumé, contact details, or the arcade.
-- **Rune Relay:** a five-round memory game with mouse, touch, and number-key input, a replay option, and a saved Rune Keeper badge.
-- **Quick travel:** `Ctrl+K` or `Cmd+K` opens the command menu. Escape closes dialogs. Tab moves between available actions.
-- **Personal touches:** an optional traveler name, saved motion preferences, animated embers, and the original landscape and portrait.
+- systems implementation
+- technical support
+- software development
+- automation
+- infrastructure
+- game systems
+- personal development projects
 
-The original full-screen name gate is replaced by an optional greeting. Visitors can get straight to the work.
+Version 5 expanded the original React/Vite portfolio into a much more interactive experience while keeping the original site intact underneath it.
 
-## Edit the content
+The existing project pages, résumé, screenshots, case studies, terminal, and Rune Relay are all still here.
 
-| File                        | What it controls                                                               |
-| --------------------------- | ------------------------------------------------------------------------------ |
-| `src/data/portfolio.js`     | Projects, skill descriptions, experience, certificates, email, and résumé path |
-| `src/App.jsx`               | Main page layout, introduction, about copy, contact details, and preferences   |
-| `src/styles.css`            | Typography, color, component styles, responsive layouts, and motion            |
-| `src/lib/guide.js`          | The portfolio guide’s curated answers and navigation actions                   |
-| `src/components/Arcade.jsx` | Rune Relay rules and interaction                                               |
-| `public/resume/IKING.pdf`   | The downloadable résumé supplied with the project                              |
-| `public/images/`            | Original landscape and portrait                                                |
-| `index.html`                | Page title, description, sharing metadata, favicon, and no-script fallback     |
+The newer systems, including the Realm core, project atlas, technology explorer, and Recruiter Mode, sit on top of that foundation instead of replacing it.
 
-Update the content and the résumé together when experience or certifications change.
+The goal was simple:
 
-## M.O.N.D.A.Y.’s next chapter
+Make the portfolio feel more like entering my digital workspace than scrolling through a résumé.
 
-The portfolio guide works entirely in the browser. It is a separate preview, not the desktop assistant, and it does not execute commands, inspect the visitor’s computer, or call a model provider. Its label and fallback responses make that boundary clear.
+---
 
-The guide’s conversation UI lives in `src/components/Guide.jsx`; its response logic is isolated in `src/lib/guide.js`. A future integration can replace that response layer with a server endpoint while keeping the interface. The server should own provider credentials and return plain-text replies plus a small allowlist of portfolio navigation actions. Add loading, cancellation, and failure states when connecting that endpoint.
+# New Interactive Systems
 
-GitHub Pages hosts static files, so a live connection needs a separate backend. Keep the public assistant limited to portfolio questions and explicitly chosen public tools; local desktop controls belong in the private desktop application. No credentials or API keys belong in browser environment variables or this repository.
+## Realm Core
 
-## Interaction and privacy
+The hero now includes a real WebGL artifact built specifically for the site.
 
-Email links open the visitor’s email application. The copy button copies the public contact address, with a readable fallback if clipboard access is unavailable.
+It uses:
 
-The site uses no analytics, trackers, external fonts, or remote assistant calls. The traveler name, effects preference, and best rune score are stored only in the visitor’s browser under `realm:` keys. Guide messages live in memory and clear when the dialog closes. The site still works when browser storage is unavailable.
+- faceted geometry
+- orbital paths
+- digital dust
+- depth
+- pointer movement
+- multiple project modes
 
-Motion respects the operating system’s reduced-motion preference. Dialogs use native modal behavior, keyboard focus containment, Escape dismissal, and focus restoration. Project details and primary navigation are available without playing the game.
+Selecting a mode changes the visual tone of the core and also connects it to real projects and technologies from the portfolio.
 
-## Typography and assets
+A still version is always available for visitors who disable motion or cannot run WebGL.
 
-DM Sans is self-hosted through `@fontsource-variable/dm-sans`, under its bundled SIL Open Font License. Display headings use the system serif stack. The landscape, illustrated portrait, and résumé are retained from the supplied source. Project panels are lightweight interface illustrations, with sample output identified as such.
+---
+
+## Project Atlas
+
+The Project Atlas turns eight of my existing builds into an interactive spatial map.
+
+Projects can be selected using:
+
+- mouse
+- keyboard
+- touch
+
+Connections between projects are based on shared tags and technologies.
+
+They are not meant to imply that the applications are technically connected to each other.
+
+Selecting a project opens an inspector with more information and provides access to its existing case study or archive entry.
+
+---
+
+## Physical Project Artwork
+
+Project visuals now have a little more life to them.
+
+Depending on the project, artwork can respond with:
+
+- subtle perspective
+- cursor-following lighting
+- diagnostic-style scanning effects
+- card tilt
+- layered depth
+
+The TCG visuals use the existing abstract artwork already in the portfolio. No fake card art was created just to make the section look more impressive.
+
+---
+
+## Technology Evidence Explorer
+
+The skills section is no longer just a collection of technologies.
+
+Visitors can select individual technologies and see where they connect to actual projects or work experience.
+
+Project matches are generated from the tags already attached to each project.
+
+Employment-backed skills still use their existing evidence, and technologies without a real project connection do not suddenly get one.
+
+I wanted this section to answer a more useful question than:
+
+> “Do you know this technology?”
+
+Instead, it shows:
+
+> “Where have you actually used it?”
+
+---
+
+## Recruiter Mode
+
+Recruiter Mode is the fast path through the portfolio.
+
+When enabled, it strips away the heavier visual experience and prioritizes the information someone reviewing me for a role is probably looking for first:
+
+- experience
+- technical skills
+- credentials
+- featured projects
+- résumé
+- contact information
+
+It also removes the hero WebGL scene and most decorative sections, disables ambient effects, and switches navigation to simpler labels.
+
+The full project evidence is still available on the same site.
+
+Recruiter Mode is saved locally in the browser and can be turned off from the same header at any time.
+
+---
+
+## Command Palette
+
+Press:
+
+`Ctrl + K`
+
+or:
+
+`Cmd + K`
+
+to open the command palette.
+
+It supports dynamic search and keyboard navigation using:
+
+- Arrow Keys
+- Home
+- End
+- Enter
+- Escape
+
+You can quickly jump to:
+
+- projects
+- résumé
+- skills
+- experience
+- contact
+- GitHub
+- LinkedIn
+- M.O.N.D.A.Y.
+- KTD
+- games
+
+There is also a visible shortcut button in the header for people who do not know the keyboard command.
+
+---
+
+## Portfolio Terminal
+
+The built-in terminal is still part of the site and now supports several useful commands:
+
+`help`  
+`about`  
+`projects`  
+`skills`  
+`experience`  
+`resume`  
+`contact`  
+`github`  
+`linkedin`  
+`clear`
+
+There are also a few hidden commands for people who like poking around:
+
+`whoami`  
+`sudo hire isaiah`  
+`developer`  
+`unlock realm`
+
+The Konami Code also launches Rune Relay as long as the user is not typing inside a text field or dialog.
+
+Because every respectable developer portfolio needs at least one unnecessary secret.
+
+---
+
+# Performance
+
+One of the main goals of Version 5 was adding more interaction without turning the site into something that only runs well on a gaming PC.
+
+No new packages were added.
+
+The WebGL renderer is loaded dynamically and is roughly:
+
+- 3.4 KB uncompressed
+- 1.7 KB gzip
+
+The scene uses:
+
+- a small fixed geometry buffer
+- 64 dust particles
+- three orbital paths
+- roughly 30 render updates per second
+
+Pixel ratio is capped at `1.5`.
+
+There are no downloaded 3D models, texture packs, external font calls, or large animation libraries.
+
+The scene only initializes when it is visible and motion is allowed.
+
+Rendering stops when:
+
+- the scene leaves the viewport
+- the browser tab becomes hidden
+- reduced motion is enabled
+- ambient effects are disabled
+- Recruiter Mode is active
+
+If WebGL fails or the context is lost, the portfolio falls back to a CSS version of the artifact while keeping all project controls usable.
+
+The site never relies on the 3D scene for access to important information.
+
+---
+
+# Input and Interaction
+
+Pointer-based tilt is only enabled for mouse input.
+
+It uses a single scheduled frame per update and does not block clicks or normal pointer behavior.
+
+Touch devices use explicit selections instead of hover effects or motion sensors.
+
+Scrolling remains completely native.
+
+There are no forced camera sequences or scroll-jacking effects preventing someone from getting to the content they actually came to see.
+
+The environment still changes as you move through the site using:
+
+- section accents
+- depth movement
+- hero transitions
+- desktop location indicators
+
+The effects support the portfolio instead of controlling it.
+
+---
+
+# Mobile
+
+The mobile experience is intentionally different from desktop.
+
+The Realm core moves below the introduction so the page stays readable immediately.
+
+The Project Atlas uses a simpler 2.5D layout instead of introducing another heavy WebGL scene.
+
+The same eight projects are still available and selectable.
+
+On smaller screens, the atlas stacks above its inspector so everything remains easy to reach.
+
+I chose native HTML controls for the atlas because they are:
+
+- faster
+- more accessible
+- easier to use with touch
+- more reliable across devices
+
+The goal was not to recreate the desktop experience exactly.
+
+The goal was to make the mobile version feel like the same site without making a phone fight for its life.
+
+---
+
+# Project Evidence
+
+Technical claims and screenshot sources are documented in:
+
+`docs/PROJECT-EVIDENCE.md`
+
+Each case study includes its current development status.
+
+The public site includes selected screenshots and descriptions, but it does not expose the private source code for featured projects.
+
+The archive still contains smaller public React and Unreal projects with their existing GitHub links.
+
+For private featured projects, the site provides a direct email option for a code walkthrough.
+
+A repository or live demo link should only be added when that project is actually ready to be public.
+
+---
+
+# M.O.N.D.A.Y. Demo
+
+The M.O.N.D.A.Y. section includes an embedded terminal and floating guide that share the same curated response system.
+
+Suggested questions connect areas such as:
+
+- C# development
+- IT experience
+- system design
+
+back to real evidence already present in the portfolio.
+
+Unknown questions return a clear fallback instead of pretending the system knows something it does not.
+
+The `clear` command resets the local conversation.
+
+This is currently a browser-based portfolio simulation.
+
+It does **not**:
+
+- call an AI model
+- access visitor files
+- control a desktop
+- send visitor questions to a server
+- save conversations permanently
+
+Conversation state only exists in component memory.
+
+A future model-backed version would require:
+
+- a separate backend
+- a restricted portfolio knowledge source
+- request limits
+- server-side credentials
+- proper security boundaries
+
+GitHub Pages would continue hosting the frontend.
+
+Private API keys will never be placed in client-side code, and the public portfolio will not expose a desktop command service.
+
+---
+
+# Accessibility and Browser Behavior
+
+Accessibility was treated as part of the implementation instead of something added afterward.
+
+Current behavior includes:
+
+- `Ctrl/Cmd + K` keyboard access to the command menu
+- native dialogs with focus management
+- Escape-to-close behavior
+- trigger focus restoration
+- keyboard-accessible architecture components
+- readable explanation panels
+- image captions
+- full-size image viewing
+- reduced-motion support
+- saved ambient-effects preferences
+- native project and technology buttons
+- visible selection states
+- non-WebGL alternatives for important information
+
+The WebGL scene is decorative.
+
+Everything important it represents is also available through normal HTML controls.
+
+The home page and case studies are also pre-rendered so the core portfolio content remains readable without JavaScript.
+
+Interactive features require JavaScript.
+
+Fonts and screenshots are served directly with the site, and the DM Sans license is included in:
+
+`public/fonts`
+
+---
+
+# Built With
+
+Realm of Isaiah continues to use the existing React/Vite foundation.
+
+Version 5 and 5.1 focus on adding more depth and interaction without bloating the project with unnecessary packages.
+
+The philosophy for the site is basically:
+
+**Use the cool thing when the cool thing actually improves the experience.**
+
+If plain HTML, CSS, and JavaScript can do the job better, use that instead.
+
+The portfolio should be memorable because of what it communicates and how it feels to use, not because it throws the largest possible JavaScript bundle at the browser.

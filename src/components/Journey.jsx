@@ -1,5 +1,6 @@
-import { credentials, experience, profile } from '../data/portfolio';
-import Icon from './Icon';
+import { credentials, experience } from "../data/portfolio";
+import Icon from "./Icon";
+import ResumeLinks from "./ResumeLinks";
 
 export default function Journey() {
   return (
@@ -17,20 +18,14 @@ export default function Journey() {
             Experience is <em>earned.</em>
           </h2>
         </div>
-        <a
-          className="text-button"
-          href={profile.resume}
-          download="Isaiah_King_Resume.pdf"
-        >
-          The résumé version <Icon name="download" size={17} />
-        </a>
+        <ResumeLinks compact />
       </div>
       <div className="journey-layout">
         <div className="timeline">
           {experience.map((job) => (
             <article
               key={job.title}
-              className={`timeline-item ${job.current ? 'current' : ''}`}
+              className={`timeline-item ${job.current ? "current" : ""}`}
             >
               <div className="timeline-marker">
                 <span />
@@ -45,6 +40,11 @@ export default function Journey() {
                 <h3>{job.title}</h3>
                 <div className="job-company">{job.company}</div>
                 <p>{job.text}</p>
+                <ul className="job-achievements">
+                  {job.achievements.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
                 <div className="job-tags">
                   {job.tags.map((tag) => (
                     <span key={tag}>{tag}</span>
@@ -72,10 +72,10 @@ export default function Journey() {
             {credentials.map((item) => (
               <div className="credential" key={item.title}>
                 <span
-                  className={`credential-icon ${item.status === 'In progress' ? 'in-progress' : ''}`}
+                  className={`credential-icon ${item.status === "In progress" ? "in-progress" : ""}`}
                 >
                   <Icon
-                    name={item.status === 'In progress' ? 'book' : 'check'}
+                    name={item.status === "In progress" ? "book" : "check"}
                     size={15}
                   />
                 </span>

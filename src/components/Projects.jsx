@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { projects } from '../data/portfolio';
-import Icon from './Icon';
-import Modal from './Modal';
+import { useState } from "react";
+import { projects } from "../data/portfolio";
+import { caseStudies, caseStudyPath, featuredIds } from "../data/caseStudies";
+import Icon from "./Icon";
+import Modal from "./Modal";
+import ProjectUniverse from "./ProjectUniverse";
 
 export function ProjectArt({ project }) {
-  if (project.id === 'monday')
+  if (project.id === "monday")
     return (
       <div className="project-art art-monday" aria-hidden="true">
         <div className="art-topline">
@@ -25,7 +27,7 @@ export function ProjectArt({ project }) {
         <span className="art-caption">CONVERSATION → ACTION</span>
       </div>
     );
-  if (project.id === 'toolkit')
+  if (project.id === "toolkit")
     return (
       <div className="project-art art-toolkit" aria-hidden="true">
         <div className="diagnostic-window">
@@ -40,14 +42,14 @@ export function ProjectArt({ project }) {
               <small>AUTOMATED CHECKS</small>
             </div>
             {[
-              'System health',
-              'Storage & hardware',
-              'Security & encryption',
+              "System health",
+              "Storage & hardware",
+              "Security & encryption",
             ].map((row, i) => (
               <div className="diagnostic-row" key={row}>
                 <span>{row}</span>
-                <span className={i === 2 ? 'sample-warn' : 'sample-pass'}>
-                  {i === 2 ? 'REVIEW' : 'PASS'}
+                <span className={i === 2 ? "sample-warn" : "sample-pass"}>
+                  {i === 2 ? "REVIEW" : "PASS"}
                   <i />
                 </span>
               </div>
@@ -62,7 +64,7 @@ export function ProjectArt({ project }) {
         </span>
       </div>
     );
-  if (project.id === 'tcg')
+  if (project.id === "tcg")
     return (
       <div className="project-art art-tcg" aria-hidden="true">
         <div className="card-orbit" />
@@ -89,11 +91,11 @@ export function ProjectArt({ project }) {
       </div>
     );
   const icons = {
-    'ground-zero': 'swords',
-    'e-plant': 'leaf',
-    redux: 'layers',
-    'event-planner': 'calendar',
-    realm: 'gem',
+    "ground-zero": "swords",
+    "e-plant": "leaf",
+    redux: "layers",
+    "event-planner": "calendar",
+    realm: "gem",
   };
   return (
     <div
@@ -104,26 +106,21 @@ export function ProjectArt({ project }) {
       <div className="archive-sigil">
         <Icon name={icons[project.id]} size={46} />
       </div>
-      <span className="art-caption">{project.tags.join(' / ')}</span>
+      <span className="art-caption">{project.tags.join(" / ")}</span>
     </div>
   );
 }
 
 export default function Projects({ onOpen }) {
-  const [filter, setFilter] = useState('All work');
-  const [expanded, setExpanded] = useState(false);
-  const filters = [
-    'All work',
-    'Software & tools',
-    'Game development',
-    'Web development',
-  ];
-  const matching =
-    filter === 'All work'
-      ? projects
-      : projects.filter((project) => project.category === filter);
+  const [filter, setFilter] = useState("All archived work");
+  const archive = projects.filter(
+    (project) => !featuredIds.includes(project.id),
+  );
+  const filters = ["All archived work", "Game development", "Web development"];
   const visible =
-    filter === 'All work' && !expanded ? matching.slice(0, 3) : matching;
+    filter === "All archived work"
+      ? archive
+      : archive.filter((project) => project.category === filter);
   return (
     <section
       id="work"
@@ -133,91 +130,140 @@ export default function Projects({ onOpen }) {
       <div className="section-heading">
         <div>
           <span className="eyebrow">
-            <span>01</span> THE WORKBENCH
+            <span>01</span> FEATURED BUILDS
           </span>
           <h2 id="work-title">
-            Less talk. <em>More building.</em>
+            Three builds. <em>A lot of ground covered.</em>
           </h2>
         </div>
         <p>
-          Tools that solve a problem. Systems that tell a story.
-          <br className="desktop-break" /> Here’s what I’ve been putting my time
-          into.
+          Useful tools, deliberate systems, and worlds in progress. Here’s the
+          thinking behind the work.
         </p>
       </div>
-      <div className="project-toolbar">
-        <div className="filter-list" role="group" aria-label="Filter projects">
-          {filters.map((item) => (
-            <button
-              key={item}
-              aria-pressed={filter === item}
-              className={filter === item ? 'active' : ''}
-              onClick={() => {
-                setFilter(item);
-                setExpanded(false);
-              }}
-            >
-              {item}
-              {item === 'All work' && (
-                <span>{projects.length.toString().padStart(2, '0')}</span>
-              )}
-            </button>
-          ))}
-        </div>
-        <span className="toolbar-note">
-          <i /> Always a work in progress
-        </span>
-      </div>
-      <div className="projects-grid" aria-live="polite">
-        {visible.map((project) => (
-          <article className="project-card" key={project.id}>
-            <button
-              className="project-art-button"
-              onClick={() => onOpen(project.id)}
-              aria-label={`Explore ${project.title}`}
-            >
-              <ProjectArt project={project} />
-              <span className="art-open">
-                <Icon name="diagonal" />
-              </span>
-            </button>
-            <div className="project-info">
-              <div className="project-meta">
-                <span>{project.category}</span>
-                <span>{project.status}</span>
-              </div>
-              <h3>
-                <button onClick={() => onOpen(project.id)}>
-                  {project.title}
-                </button>
-              </h3>
-              <p>{project.description}</p>
-              <div className="tags">
-                {project.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-              <button
-                className="text-button project-link"
-                onClick={() => onOpen(project.id)}
+      <ProjectUniverse onOpen={onOpen} />
+      <div className="featured-builds">
+        {featuredIds.map((id) => {
+          const project = projects.find((item) => item.id === id);
+          const study = caseStudies[id];
+          return (
+            <article key={id} className={`featured-build featured-${id}`}>
+              <a
+                className="featured-art"
+                href={caseStudyPath(id)}
+                aria-label={`Read the ${project.title} case study`}
               >
-                Explore the project <Icon name="diagonal" size={16} />
-              </button>
-            </div>
-          </article>
-        ))}
+                <ProjectArt project={project} />
+                <span className="featured-art-label">
+                  BUILD {project.number} <Icon name="diagonal" size={18} />
+                </span>
+              </a>
+              <div className="featured-copy">
+                <div className="featured-topline">
+                  <span className="eyebrow">{project.category}</span>
+                  <span className="featured-status">
+                    <i /> In development
+                  </span>
+                </div>
+                <h3>
+                  <a href={caseStudyPath(id)}>{project.title}</a>
+                </h3>
+                <p>{study.summary}</p>
+                <div className="featured-proof">
+                  {study.metrics.slice(0, 2).map((metric) => (
+                    <span key={metric.label}>
+                      <strong>{metric.value}</strong>
+                      {metric.label}
+                    </span>
+                  ))}
+                </div>
+                <div className="tags">
+                  {project.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+                <a
+                  className="text-button featured-link"
+                  href={caseStudyPath(id)}
+                >
+                  Read the case study <Icon name="arrow" size={18} />
+                </a>
+              </div>
+            </article>
+          );
+        })}
       </div>
-      {filter === 'All work' && (
-        <div className="more-projects">
-          <button
-            className="text-button"
-            onClick={() => setExpanded(!expanded)}
+      <details className="project-archive">
+        <summary>
+          <span>
+            <span className="eyebrow">THE ARCHIVE</span>
+            <strong>More from the workbench</strong>
+            <small>
+              React projects, an Unreal prototype, and the realm itself.
+            </small>
+          </span>
+          <span className="archive-count">
+            05 <Icon name="down" size={20} />
+          </span>
+        </summary>
+        <div className="archive-content">
+          <div
+            className="filter-list"
+            role="group"
+            aria-label="Filter archived projects"
           >
-            {expanded ? 'Show featured projects' : 'More from the workbench'}
-            <span>{expanded ? '−' : '+ 5'}</span>
-          </button>
+            {filters.map((item) => (
+              <button
+                key={item}
+                aria-pressed={filter === item}
+                className={filter === item ? "active" : ""}
+                onClick={() => setFilter(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <div className="projects-grid" aria-live="polite">
+            {visible.map((project) => (
+              <article className="project-card" key={project.id}>
+                <button
+                  className="project-art-button"
+                  onClick={() => onOpen(project.id)}
+                  aria-label={`Explore ${project.title}`}
+                >
+                  <ProjectArt project={project} />
+                  <span className="art-open">
+                    <Icon name="diagonal" />
+                  </span>
+                </button>
+                <div className="project-info">
+                  <div className="project-meta">
+                    <span>{project.category}</span>
+                    <span>{project.status}</span>
+                  </div>
+                  <h3>
+                    <button onClick={() => onOpen(project.id)}>
+                      {project.title}
+                    </button>
+                  </h3>
+                  <p>{project.description}</p>
+                  <div className="tags">
+                    {project.tags.map((tag) => (
+                      <span key={tag}>{tag}</span>
+                    ))}
+                  </div>
+                  <button
+                    className="text-button project-link"
+                    onClick={() => onOpen(project.id)}
+                  >
+                    Explore the project <Icon name="diagonal" size={16} />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
-      )}
+      </details>
     </section>
   );
 }
@@ -275,7 +321,7 @@ export function ProjectModal({ id, onClose, onGuide }) {
               View source <Icon name="github" size={18} />
             </a>
           )}
-          {project.id === 'monday' && (
+          {project.id === "monday" && (
             <button className="button primary" onClick={onGuide}>
               Meet the portfolio guide <Icon name="arrow" size={18} />
             </button>
